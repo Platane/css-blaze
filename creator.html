@@ -15,38 +15,41 @@
 
 		}
 
-		#code-css{
-			top:270px;
-			left:10%;
-			/*position:absolute;*/
-			width:80%;
-			height:500px;
-			overflow-y:auto;
-			overflow-x:hidden;
-			color:#fff;
-			border-radius:6px;
-			border:solid 1px #fff;
-			background :rgba(200,200,200,0.1);
+		#css-container{
+			width: 70%;
 			font-family: Calibri;
-			font-size:12px;
-			color:#ccc;
-			white-space:pre-line;
-			z-index:-1;
-			padding:4px;
-
+			margin-top: 240px;
+			margin-left: 3%;
 		}
-		
+		#css-container>span{
+			color: #fff;
+			font-size: 1.4em;
+		}
+		#code-css{
+			height: 500px;
+			overflow-y: auto;
+			overflow-x: hidden;
+			border-radius: 6px;
+			border: solid 1px #fff;
+			background: rgba(200,200,200,0.1);
+			font-family: Calibri;
+			font-size: 0.7em;
+			color: #ccc;
+			white-space: pre-line;
+			z-index: -1;
+			padding: 4px;
+		}
 		#code-css::-webkit-scrollbar {
-		width: 0.8em;
-		height: 0.8em;
-		background-color: none;
-		border: 10px solid transparent;
+			width: 0.8em;
+			height: 0.8em;
+			background-color: none;
+			border: 10px solid transparent;
 		}
 		#code-css::-webkit-scrollbar-thumb {
-		min-height: 0.8em;
-		min-width: 0.8em;
-		-webkit-border-radius: 4px;
-		background-color: #ddd;
+			min-height: 0.8em;
+			min-width: 0.8em;
+			-webkit-border-radius: 4px;
+			background-color: #ddd;
 		}
 
 	</style>
@@ -55,6 +58,7 @@
 	<script>
 
 
+		// it's the options array that dat.gui access
 		var options = {
 
 			n_keyframe:15,
@@ -90,7 +94,8 @@
 			blur:5,
 		};
 
-
+		// based on the options array, this function return the parameters required to getAnimation
+		// most of them are randomly generated between a range specified in the option array
 		var generateParams = function(options){
 			
 			options=options || {};
@@ -148,35 +153,40 @@
 			}
 		}
 
+		// return the css code of the blazing effect
 		var getAnimation = function ( color , blur , T , phy , Ay , Ax , ox , oy , Abl , n , name , size , duration ){
 
+			// floor function applyied on every number in the css properties 
 			var floor = function(x){
 				return Math.round( x * 10 )/10;
 			};
 
-			var prefix=['','-webkit-','-moz-','-msie-'];
-			//var prefix=['-webkit-'];
+			// build the text shadow property
 			var s="";
 			var keys=[];
 			var shadowProp;
-			for(var j=0;j<=n;j++){
+			for(var j=0;j<=n;j++){	// loop on every key frame
+				
+				// the avancement
 				var p=(j/n);
 
 				shadowProp = "text-shadow:";
 
-				for(var i=0;i<color.length;i++){
-					var t=Math.cos( phy[i] + p * T[i] );
+				for(var i=0;i<color.length;i++){  // loop on every color
+
+					var t=Math.cos( phy[i] + p * T[i] );	// the oscillation value
 					shadowProp += (i==0 ? "" : ",")
-								+ floor(  t*Ax[i] + ox[i] ) +"px "
-								+ floor( size + t*Ay[i] + oy[i] ) +"px "
-								+ floor(  Math.max(5,t*Abl[i] + blur[i]) ) +"px "
+								+ floor(  t*Ax[i] + ox[i] ) +"px "	// x offset, base + oscillation value * amplitude
+								+ floor( size + t*Ay[i] + oy[i] ) +"px " // y offset, base + oscillation value * amplitude + the font size
+								+ floor(  Math.max(5,t*Abl[i] + blur[i]) ) +"px "	// beware of not dropping the blur effect under 5px, the effect is not so impressive
 								+ color[i];
 				}
 
 				keys.push( shadowProp+";" );
 			}
 
-			
+			// copy the porperty for each prefix
+			var prefix=['','-webkit-','-moz-','-msie-'];
 			for(var i=0;i<prefix.length;i++){
 				
 				s+= "@"+prefix[i]+"keyframes "+name+" {\n";
@@ -186,9 +196,10 @@
 				s+="}\n"
 			}
 
+			// copy this code to the css script
 			var css=[
 			".blazing::before{",
-			    "content:'xlxlx.xlxxxlxlx.xlX..lxlxlLxlxl..Xlx.lxxlxxxxlxXXlXXlxlxlx.xlx.xlxxx.xxlxlx.xlX..lxlxlLxlxl..Xlx.lxxlxxxxlxXXlXXlx.x.xlxxlxx.X.xxlxxlxxlllxxlxlxlxlxlx.xlxxxlxlx.xlX..lxlxlLxlxl..Xlx.lxxlxxxxlxXXlXXlxlxlx.xlx.xlxxx.xxlxlx.xlX..lxlxlLxlxl..Xlx.lxxlxxxxlxXXlXXlx.x.xlxxlxx.X.xxlxxlxxlllxxlxlxlxlxlx.xlxxxlxlx.xlX..lxlxlLxlxl..Xlx.lxxlxxxxlxXXlXXlxlxlx.xlx.xlxxx.xxlxlx.xlX..lxlxlLxlxl..Xlx.lxxlxxxxlxXXlXXlx.x.xlxxlxx.X.xxlxxlxxlllxxlxlxl';",
+			    "content:'xlxlx.xlxxxlxlx.xlX..lxlxlLxlxl..Xlx.lxxlxxxxlxXXlXXlxlxlx.xlx.xlxxx.xxlxlx.xlX..lxlxlLxlxl..Xlx.lxxlxxxxlxXXlXXlx.x.xlxxlxx.X.xxlxxlxxlllxxlxlxlxlxlx.xlxxxlxlx.xlX..lxlxlLxlxl..Xlx.lxxlxxxxlxXXlXXlxlxlx.xlx.xlxxx.xxlxlx.xlX..lxlxlLxlxl..Xlx.lxxlxxxxlxXXlXXlx.x.xlxxlxx.X.xxlxxlxxlllxxlxlxlxlxlx.xlxxxlxlx.xlX..lxlxlLxllxxlxxxxlxXXlXXlxlxlx.xlx.xlxxx.xxlxlx.xlX..xlLxlxl..Xlx.lxxlxxxxlxXXlXXlx.x.xlxxlxx.X.xxlxxlxxlllxxlxlxl';",
 			    "width:104%;",
 			    "left:-2%;",
 			    "overflow-x:hidden;",
@@ -201,19 +212,24 @@
 				"-webkit-animation: blaze infinite "+ duration +"s;",
 			    "-moz-animation: blaze infinite "+ duration +"s;",
 			   	" animation: blaze infinite "+ duration +"s;",
-			   	//"background: rgba(123,12,219,0.5);",
 			   	"height:"+(size*2 )+"px;",
 			   	"border-radius:5px;",
-
 			"}",
 			].join("\n");
 
 			return css + "\n" + s ;
 		};	
 
+
+		// to apply the style dynamicly, a css style sheet element is created and altered at every update
+		// the element is refresh at every update by removing/ adding it to this parent
+		
+		// the css style sheet element
 		var blazeStyle = document.createElement( 'style' );
 		document.getElementsByTagName( 'head' )[ 0 ].appendChild( blazeStyle );
 		
+		// update the style,
+		// copy the string in the css style sheet and make the element update;
 		var applyStyle=function( s ){
 
 			blazeStyle.innerHTML = s;
@@ -227,6 +243,8 @@
 		};
 
 
+		// given a color, it return n color that are in the same tint
+		// not really mandatory, but it's pretty cool
 		var declineColor=function(c,n){
 			
 			var colors=[];
@@ -254,6 +272,8 @@
 		};
 
 
+		// based on the custom options, generate randomly params for generating the animation,
+		// then generate it and apply it
 		var updateStyle=function(options){
 
 			var p = generateParams( options )
@@ -265,7 +285,7 @@
 			document.getElementById( 'code-css' ).innerHTML=s;
 		};
 
-
+		// each time the options are modified
 		var update=function(){
 
 			var color=[];
@@ -276,7 +296,11 @@
 
 			updateStyle(options);
 		};
+
 		window.onload=update;
+
+
+		///////// init dat.gui
 
 		var gui = new dat.GUI();
 
@@ -330,9 +354,14 @@
 
 	</script>
 
+
+
 	<div id="burning-square" class="blazing"></div>
 
-	<div id="code-css"></div>
+	<div id="css-container">
+		<span>CSS</span>
+		<div id="code-css"></div>
+	</div>
 
 </body>
 <html>
