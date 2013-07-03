@@ -11,20 +11,23 @@ Pink may not be your favorite color? Nevermind I wrote a live editor where you c
 
 I also made a function that generate colors that look good together, and I made it just for you.
 
-Open the creator.html file, or go to http://platane.github.io/css-blaze to use it.
+Open the creator.html file, or go to [platane.github.io/css-blaze](http://platane.github.io/css-blaze) to use it.
 
 ### CSS code
 
 Past it in your style sheet 
 
 ```
+.blazing{
+  position:relative;
+}
 .blazing::before{ 
   content:'xlxlx.xlxxxlxlx.xlX..lxlxlLxlxl..Xlx.lxxlxxxxlxXXlXXlxlxlx.xlx.xlxxx.xxlxlx.xlX..lxlxlLxlxl..Xlx.lxxlxxxxlxXXlXXlx.x.xlxxlxx.X.xxlxxlxxlllxxlxlxlxlxlx.xlxxxlxlx.xlX..lxlxlLxlxl..Xlx.lxxlxxxxlxXXlXXlxlxlx.xlx.xlxxx.xxlxlx.xlX..lxlxlLxlxl..Xlx.lxxlxxxxlxXXlXXlx.x.xlxxlxx.X.xxlxxlxxlllxxlxlxlxlxlx.xlxxxlxlx.xlX..lxlxlLxllxxlxxxxlxXXlXXlxlxlx.xlx.xlxxx.xxlxlx.xlX..xlLxlxl..Xlx.lxxlxxxxlxXXlXXlx.x.xlxxlxx.X.xxlxxlxxlllxxlxlxl';
   width:104%;
   left:-2%;
   overflow-x:hidden;
   display:block;
-  position:relative;
+  position:absolute;
   font-size:15px;
   font-weight: bold;
   top:-25px; color:rgba(0,0,0,0);
