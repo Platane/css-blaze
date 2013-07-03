@@ -67,9 +67,25 @@ Past it in your style sheet
 
 ```
 
+# tips
+
+You may notice that the css in pretty heavy. I have to prefix all the properties as there are not yet standards. You can reduce drastically the weight by using less colors and less keyframes.
+
+
+### The tricks
+
+To achieve this effect, I use some css shadow property and animate them with key frame animation.
+
+The shadow params values oscillate following a random pattern to looks chaotic and make a realistic fire effect.
+
+The `box-shadox` property does not offer a convincing render. We need more asperities on the element to figure the flame.
+
+That's why I use `:before` pseudo class to insert content on top of the element. A chain of characters "xlxlxxxll" do the job pretty well. It's this chain that we animate with `text-shadow` property.
+
+
 ### Author
 
-Just me, @Platane.
+Me, @Platane.
 If you like my work, there is some more over there [arthur-brongniart.fr](http://arthur-brongniart.fr)
 
 
