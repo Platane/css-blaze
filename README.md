@@ -67,7 +67,7 @@ Past it in your style sheet
 
 ```
 
-# tips
+##### tips
 
 You may notice that the css in pretty heavy. I have to prefix all the properties as there are not yet standards. You can reduce drastically the weight by using less colors and less keyframes.
 
