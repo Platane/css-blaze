@@ -364,13 +364,13 @@
       <section>
         <p>css-blaze is a css trick that emulate a fire over an html element. You should definitively try it, it's pretty cool.</p>
 
-<h3>
-<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h3>
+<h2>
+<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
 
 <p>Simply paste the css code in your style sheet and add the class name to your element. The element is now burning and your website is 83% cooler.</p>
 
-<h3>
-<a name="generator" class="anchor" href="#generator"><span class="octicon octicon-link"></span></a>Generator</h3>
+<h2>
+<a name="generator" class="anchor" href="#generator"><span class="octicon octicon-link"></span></a>Generator</h2>
 
 <p>Pink may not be your favorite color? Nevermind I wrote a generator where you can custom some stuff to make it looks like you want to.</p>
 
@@ -378,20 +378,32 @@
 
 <p>I also made a function that generate colors that look good together, and I made it just for you.</p>
 
-<h3>
-<a name="css-code" class="anchor" href="#css-code"><span class="octicon octicon-link"></span></a>CSS code</h3>
+<h2>
+<a name="css-code" class="anchor" href="#css-code"><span class="octicon octicon-link"></span></a>CSS code</h2>
 
 <p>Past it in your style sheet </p>
 
-<!-- 
-<pre><code id="code-css">code css
-</code></pre>
--->
+
 <div id="code-css">code css</div>
 
+<br>
+<h4>tips</h4>
 
-<h3>
-<a name="author" class="anchor" href="#author"><span class="octicon octicon-link"></span></a>Author</h3>
+<p>You may notice that the css in pretty heavy. I have to prefix all the properties as there are not yet standards. You can reduce drastically the weight by using less colors and less keyframes.</p>
+
+<h2>
+<a name="author" class="anchor" href="#The tricks"><span class="octicon octicon-link"></span></a>The tricks</h2>
+
+<p>To achieve this effect, I use some css shadow property and animate them with key frame animation.</p>
+
+<p>The shadow params values oscillate following a random pattern to looks chaotic and make a realistic fire effect.</p>
+
+<p>The <code>box-shadox</code> property does not offer a convincing render. We need more asperities on the element to figure the flame.</p>
+
+<p>That's why I use <code>:before</code> pseudo class to insert content on top of the element. A chain of characters "xlxlxxxll" do the job pretty well. It's this chain that we animate with <code>text-shadow</code> property.</p>
+
+<h2>
+<a name="author" class="anchor" href="#author"><span class="octicon octicon-link"></span></a>Author</h2>
 
 <p>Just me, <a href="https://github.com/Platane" class="user-mention">@Platane</a>.
 If you like my work, there is some more over there <a href="http://arthur-brongniart.fr">arthur-brongniart.fr</a></p>
