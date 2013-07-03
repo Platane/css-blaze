@@ -11,6 +11,337 @@
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
+    <style type="text/css">
+      #burning-square{
+        width:200px;
+        height:17px;
+        margin-top: 190px;
+        background-color:#eee;
+      }
+      #code-css{
+      height: 500px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 8px 15px;
+      background: #f8f8f8;
+      border-radius: 5px;
+      border: 1px solid #e5e5e5;
+      background: rgba(200,200,200,0.1);
+      font-family: Monaco, Bitstream Vera Sans Mono, Lucida Console, Terminal;
+      font-size: 0.7em;
+      white-space: pre-line;
+      z-index: -1;
+    }
+    </style>
+  <script src="dat.gui.js"></script>
+  <script src="color.js"></script>
+  <script>
+
+
+    // it's the options array that dat.gui access
+    var options = {
+
+      n_keyframe:15,
+
+      n_color:8,
+
+      color1:"#d90cb3",
+      color2:"#b2148f",
+      color3:"#8c1877",
+      color4:"#742462",
+      color5:"#5d2950",
+      color6:"#462943",
+      color7:"#2e212b",
+      color8:"#171416",
+      color9:"#ffffff",
+
+      duration:3,
+
+      size:15,
+
+      name:"blaze",
+
+      declineColor:function(){},
+
+      oscillation_speed:0.5,
+
+      amplitude_x:10,
+
+      amplitude_y:5,
+
+      amplitude_blur:2,
+
+      blur:5,
+    };
+
+    // based on the options array, this function return the parameters required to getAnimation
+    // most of them are randomly generated between a range specified in the option array
+    var generateParams = function(options){
+
+      options=options || {};
+
+      var oscl = options.oscillation_speed || 0,
+        ampx = options.amplitude_x || 0,
+        ampy = options.amplitude_y || 0,
+        ampblur = options.amplitude_blur ||0,
+        ablur = options.blur || 0,
+        size = options.size || 0,
+        color = options.color || [ '#fff' ],
+        n = options.n_keyframe || 20;
+
+      var T = [],     // pulsation ( not period as the var name suppose )
+        phy=[],     // origin phase
+        Ay = [],    // amplitude horizontal oscillation
+        Ax = [],    // amplitude vertical oscillation
+        Abl = [],   // amplitude blur oscillation
+        ox = [],    // x origin
+        oy = [],    // y origin
+        blur=[];    // blur value
+
+      for(var i=0;i<color.length;i++){
+
+        T[i] = ( 0.6 + Math.random() * 0.8 ) * Math.PI * 2 * (0.1+oscl) * 4;  
+
+        phy[i] = Math.random() * Math.PI * 2;
+
+        oy[i]  = -((Math.random()-0.5) * (i+1)/20 + i*size/5 ) / ( color.length + 1) * ampy;
+
+        ox[i]  = -Math.random() * 40 - 10;
+
+        Ay[i]  = ( Math.random() * (i+4)/(color.length+4) * 0.5 + 0.5 ) * ampy;
+
+        Ax[i]  = ( Math.random() * (i+4)/(color.length+4) * 0.5 + 0.5 ) * ampx;
+
+        Abl[i] = ( Math.random() * (i+2)/(color.length+2) * 0.5 + 0.5 ) * ampblur;
+
+        blur[i] = ( 0.3 + (i/color.length) * 0.7 ) * ablur * 2;
+      }
+
+      return {
+
+        T:T,
+        phy:phy,
+        Ay:Ay,
+        Ax:Ax,
+        Abl:Abl,
+        blur:blur,
+        ox:ox,
+        oy:oy,
+        n:n,
+        color:color,
+        name:"blaze",
+      }
+    }
+
+    // return the css code of the blazing effect
+    var getAnimation = function ( color , blur , T , phy , Ay , Ax , ox , oy , Abl , n , name , size , duration ){
+
+      // floor function applyied on every number in the css properties 
+      var floor = function(x){
+        return Math.round( x * 10 )/10;
+      };
+
+      // build the text shadow property
+      var s="";
+      var keys=[];
+      var shadowProp;
+      for(var j=0;j<=n;j++){  // loop on every key frame
+
+        // the avancement
+        var p=(j/n);
+
+        shadowProp = "text-shadow:";
+
+        for(var i=0;i<color.length;i++){  // loop on every color
+
+          var t=Math.cos( phy[i] + p * T[i] );  // the oscillation value
+          shadowProp += (i==0 ? "" : ",")
+                + floor(  t*Ax[i] + ox[i] ) +"px "  // x offset, base + oscillation value * amplitude
+                + floor( size + t*Ay[i] + oy[i] ) +"px " // y offset, base + oscillation value * amplitude + the font size
+                + floor(  Math.max(5,t*Abl[i] + blur[i]) ) +"px " // beware of not dropping the blur effect under 5px, the effect is not so impressive
+                + color[i];
+        }
+
+        keys.push( shadowProp+";" );
+      }
+
+      // copy the porperty for each prefix
+      var prefix=['','-webkit-','-moz-','-msie-'];
+      for(var i=0;i<prefix.length;i++){
+
+        s+= "@"+prefix[i]+"keyframes "+name+" {\n";
+        for(var j=0;j<=n;j++)
+          s+=floor(j/n*100)+"%{"+keys[j]+"}\n";
+          //s+=floor(j/n*100)+"%{"+prefix[i]+keys[j]+"}\n";
+        s+="}\n"
+      }
+
+      // copy this code to the css script
+      var css=[
+      ".blazing{",
+          "position:relative;",
+      "}",
+      ".blazing::before{",
+          "content:'xlxlx.xlxxxlxlx.xlX..lxlxlLxlxl..Xlx.lxxlxxxxlxXXlXXlxlxlx.xlx.xlxxx.xxlxlx.xlX..lxlxlLxlxl..Xlx.lxxlxxxxlxXXlXXlx.x.xlxxlxx.X.xxlxxlxxlllxxlxlxlxlxlx.xlxxxlxlx.xlX..lxlxlLxlxl..Xlx.lxxlxxxxlxXXlXXlxlxlx.xlx.xlxxx.xxlxlx.xlX..lxlxlLxlxl..Xlx.lxxlxxxxlxXXlXXlx.x.xlxxlxx.X.xxlxxlxxlllxxlxlxlxlxlx.xlxxxlxlx.xlX..lxlxlLxllxxlxxxxlxXXlXXlxlxlx.xlx.xlxxx.xxlxlx.xlX..xlLxlxl..Xlx.lxxlxxxxlxXXlXXlx.x.xlxxlxx.X.xxlxxlxxlllxxlxlxl';",
+          "width:104%;",
+          "left:-2%;",
+          "overflow-x:hidden;",
+          "display:block;",
+          "position:absolute;",
+          "font-size:"+ size +"px;",
+          "font-weight: bold;",
+          "top:"+(-size*2 + 5 )+"px;",
+          "color:rgba(0,0,0,0);",
+        "-webkit-animation: blaze infinite "+ duration +"s;",
+          "-moz-animation: blaze infinite "+ duration +"s;",
+          " animation: blaze infinite "+ duration +"s;",
+          "height:"+(size*2 )+"px;",
+          "border-radius:5px;",
+      "}",
+      ].join("\n");
+
+      return css + "\n" + s ;
+    };  
+
+
+    // to apply the style dynamicly, a css style sheet element is created and altered at every update
+    // the element is refresh at every update by removing/ adding it to this parent
+
+    // the css style sheet element
+    var blazeStyle = document.createElement( 'style' );
+    document.getElementsByTagName( 'head' )[ 0 ].appendChild( blazeStyle );
+
+    // update the style,
+    // copy the string in the css style sheet and make the element update;
+    var applyStyle=function( s ){
+
+      blazeStyle.innerHTML = s;
+
+      var burningSquarre=document.getElementById( 'burning-square' );
+      var parent=burningSquarre.parentNode;
+
+      parent.removeChild( burningSquarre );
+
+      parent.appendChild( burningSquarre );
+    };
+
+
+    // given a color, it return n color that are in the same tint
+    // not really mandatory, but it's pretty cool
+    var declineColor=function(c,n){
+
+      var colors=[];
+
+      var c=drw.Color.create(c);
+
+      var sat=c.getSat();
+      var val=c.getValue();
+      var tint=c.getTint();
+
+      var x=(sat+val)/2;
+
+      var before= Math.floor(x*n);
+      var after= n-before-1;
+
+      for(var i=0;i<before;i++)
+        colors.push( drw.Color.createWithTSV( ((tint + (Math.random()-0.5)*10)+360)%360 , (i+1)/(before+1) * sat , (i+1)/(before+1) * val )+""  );
+
+      colors.push( c+"" );
+
+      for(var i=0;i<after;i++)
+        colors.push( drw.Color.createWithTSV( ((tint + (Math.random()-0.5)*10)+360)%360 , sat + (i+1)/(after+1) * ( 1 - sat ) , val + (i+1)/(after+1) * ( 1 - val ) )+"" );
+
+      return colors.reverse();
+    };
+
+
+    // based on the custom options, generate randomly params for generating the animation,
+    // then generate it and apply it
+    var updateStyle=function(options){
+
+      var p = generateParams( options )
+
+      var s = getAnimation( p.color , p.blur ,  p.T , p.phy , p.Ay , p.Ax , p.ox , p.oy , p.Abl , p.n , options.name , options.size , options.duration );
+
+      applyStyle( s );
+
+      document.getElementById( 'code-css' ).innerHTML=s;
+    };
+
+    // each time the options are modified
+    var update=function(){
+
+      var color=[];
+      for(var i=0;i<options.n_color;i++)
+        color[i]=options['color'+(i+1)];
+
+      options.color=color;
+
+      updateStyle(options);
+    };
+
+     ///////// init dat.gui
+
+    window.onload=function(){;
+
+
+   
+      var gui = new dat.GUI();
+
+      var fcolor = gui.addFolder("colors");
+
+      var colorPickers=[];
+
+      options.declineColor=function(){
+        var c = declineColor( options.color1 , options.n_color );
+
+        for(var i=0;i<c.length;i++)
+          options[ 'color'+(i+1) ]=c[i];
+
+        for( var i in fcolor.__controllers )
+          fcolor.__controllers[i].updateDisplay();
+
+        update();
+      }
+
+      fcolor.add( options , 'declineColor' );
+
+      // adjust the number of color picker
+      var syncColorNumber=function(n){
+        while(colorPickers.length<n)
+          colorPickers.push( fcolor.addColor(options,'color'+(colorPickers.length+1) ).onChange(update).listen() );
+
+        while(colorPickers.length>n)
+          colorPickers.splice( colorPickers.length-1 , 1 )[0].remove();
+      };
+
+      fcolor.add( options , 'n_color' , 1 , 8 )
+      .step(1)
+      .onChange(function(value){
+        syncColorNumber(value);
+        update();
+      });
+
+      syncColorNumber(options.n_color);
+
+      ftime = gui.addFolder("time");
+      ftime.add( options , 'duration' , 0.5 , 6 ).step(0.5).onChange(update);
+      ftime.add( options , 'oscillation_speed' , 0 , 1 ).step(0.05).onChange(update);
+      ftime.add( options , 'n_keyframe' , 3 , 30 ).step(1).onChange(update);
+
+      famp = gui.addFolder("amplitude");
+      famp.add( options , 'amplitude_x' , 0 , 20 ).step(0.5).onChange(update);
+      famp.add( options , 'amplitude_y' , 0 , 20 ).step(0.5).onChange(update);
+      famp.add( options , 'amplitude_blur' , 0 , 20 ).step(0.5).onChange(update);
+      famp.add( options , 'blur' , 0 , 20 ).step(0.5).onChange(update);
+      famp.add( options , 'size' , 7 , 30 ).step(1).onChange(update);
+
+      update();
+    };
+
+  </script>
+
+
   </head>
   <body>
     <div class="wrapper">
@@ -21,11 +352,14 @@
         <p class="view"><a href="https://github.com/Platane/css-blaze">View the Project on GitHub <small>Platane/css-blaze</small></a></p>
 
 
-        <ul>
+        <ul class="blazing">
           <li><a href="https://github.com/Platane/css-blaze/zipball/master">Download <strong>ZIP File</strong></a></li>
           <li><a href="https://github.com/Platane/css-blaze/tarball/master">Download <strong>TAR Ball</strong></a></li>
           <li><a href="https://github.com/Platane/css-blaze">View On <strong>GitHub</strong></a></li>
         </ul>
+
+        <div id="burning-square" class="blazing"></div>
+
       </header>
       <section>
         <p>css-blaze is a css trick that emulate a fire over an html element. You should definitively try it, it's pretty cool.</p>
@@ -49,8 +383,12 @@
 
 <p>Past it in your style sheet </p>
 
-<pre><code>code css
+<!-- 
+<pre><code id="code-css">code css
 </code></pre>
+-->
+<div id="code-css">code css</div>
+
 
 <h3>
 <a name="author" class="anchor" href="#author"><span class="octicon octicon-link"></span></a>Author</h3>
